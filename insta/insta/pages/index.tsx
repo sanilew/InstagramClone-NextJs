@@ -1,0 +1,80 @@
+import Head from "next/head";
+import { useEffect, useLayoutEffect } from "react";
+import type { NextPage } from "next";
+import { useRouter } from "next/router";
+
+import { useRecoilState } from "recoil";
+import { ToastContainer, toast } from "react-toastify";
+
+import { useAuth } from "@utils/AuthProvider";
+import Header from "@components/header/Header";
+import MainComponent from "@components/MainComponent";
+import { errorMessage } from "@utils/atoms/errorMessage";
+
+import "react-toastify/dist/ReactToastify.css";
+
+const Home: NextPage = () => {
+	const router = useRouter();
+	const { user } = useAuth();
+	const [toastMessage, setToastMessage] = useRecoilState(errorMessage);
+
+	useLayoutEffect(() => {
+		if (!user) {
+			router.push("/login");
+		}
+	}, [user, router]);
+
+	useEffect(() => {
+		if (!toastMessage) return;
+		toast.warn(toastMessage, {
+			onClose: () => {
+				setToastMessage(null);
+			},
+		});
+	}, [toastMessage, setToastMessage]);
+
+	return (
+		<div>
+			<Head>
+				<title>Instagram</title>
+				<meta name="description" content="instagram clone by Ashish" />
+				<link
+					rel="apple-touch-icon"
+					sizes="180x180"
+					href="/apple-touch-icon.png"
+				/>
+				<link
+					rel="icon"
+					type="image/png"
+					sizes="32x32"
+					href="/favicon-32x32.png"
+				/>
+				<link
+					rel="icon"
+					type="image/png"
+					sizes="16x16"
+					href="/favicon-16x16.png"
+				/>
+				<link rel="manifest" href="/site.webmanifest" />
+				<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+				<meta name="msapplication-TileColor" content="#da532c" />
+				<meta name="theme-color" content="#ffffff" />
+			</Head>
+			<Header />
+			<MainComponent />
+			<ToastContainer
+				position="bottom-left"
+				autoClose={5000}
+				hideProgressBar
+				newestOnTop
+				closeOnClick
+				rtl={false}
+				pauseOnFocusLoss
+				draggable
+				pauseOnHover
+			/>
+		</div>
+	);
+};
+
+export default Home;
